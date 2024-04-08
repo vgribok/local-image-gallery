@@ -126,6 +126,7 @@
     <h1>Local Image Gallery</h1>
 
     <input type="file" id="directoryInput" webkitdirectory directory multiple accept="image/jpeg, image/png, image/gif">
+    <label for="directoryInput">Upload Directory</label>
     <div class="gallery" id="imageGallery"></div>
 
     <!-- Full-screen modal -->
@@ -142,6 +143,10 @@
     <script>
         var currentImageIndex = 0;
         var totalImages = 0;
+
+        document.getElementById('directoryInput').addEventListener('change', function() {
+            loadImages();
+        });
 
         function loadImages() {
             var directoryInput = document.getElementById('directoryInput');
