@@ -25,7 +25,7 @@
             display: none;
             position: fixed;
             z-index: 9999;
-            padding-top: 50px;
+            padding-top: 0;
             left: 0;
             top: 0;
             width: 100%;
@@ -37,8 +37,8 @@
         .modal-content {
             margin: auto;
             display: block;
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 100%;
+            max-height: 100%;
         }
 
         .close {
@@ -110,12 +110,14 @@
             var img = document.getElementById('fullScreenImage');
             img.src = imageSrc;
             modal.style.display = 'block';
+            document.documentElement.style.overflow = 'hidden'; // Hide scrollbars
         }
 
         // Function to close full-screen modal
         function closeModal() {
             var modal = document.getElementById('myModal');
             modal.style.display = 'none';
+            document.documentElement.style.overflow = 'auto'; // Show scrollbars
         }
     </script>
 </body>
