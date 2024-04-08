@@ -172,6 +172,7 @@
 
                     reader.onloadstart = function() {
                         document.getElementById('myModal').style.display = 'block';
+                        document.body.style.overflowY = 'hidden'; // Hide vertical scrollbar
                     };
 
                     reader.onload = function(e) {
@@ -201,6 +202,7 @@
 
                         if (currentImageIndex === totalImages) {
                             document.getElementById('myModal').style.display = 'none';
+                            document.body.style.overflowY = 'auto'; // Restore vertical scrollbar
                             currentImageIndex = 0;
                         }
                     };
@@ -220,13 +222,15 @@
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden'; // Hide body scrollbar
 
-            // Add event listener for keyboard arrow keys
+            // Add event listener for keyboard arrow keys and Esc key
             document.addEventListener('keydown', handleKeyDown);
         }
 
-        // Function to handle keyboard arrow key events
+        // Function to handle keyboard arrow key events and Esc key
         function handleKeyDown(event) {
-            if (event.keyCode === 37) { // Left arrow key
+            if (event.keyCode === 27) { // Esc key
+                closeModal();
+            } else if (event.keyCode === 37) { // Left arrow key
                 prevImage();
             } else if (event.keyCode === 39) { // Right arrow key
                 nextImage();
@@ -257,7 +261,7 @@
             modal.style.display = 'none';
             document.body.style.overflow = 'auto'; // Show body scrollbar
 
-            // Remove event listener for keyboard arrow keys
+            // Remove event listener for keyboard arrow keys and Esc key
             document.removeEventListener('keydown', handleKeyDown);
         }
     </script>
