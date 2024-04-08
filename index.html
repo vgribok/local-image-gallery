@@ -59,8 +59,8 @@
         .modal-content {
             margin: auto;
             display: block;
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 100%;
+            max-height: 100%;
         }
 
         .close {
@@ -80,6 +80,19 @@
             text-decoration: none;
             cursor: pointer;
         }
+
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: #ccc;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #4caf50;
+        }
     </style>
 </head>
 <body>
@@ -94,9 +107,15 @@
     <div id="myModal" class="modal">
         <span class="close" onclick="closeModal()">&times;</span>
         <img class="modal-content" id="fullScreenImage">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
     </div>
 
     <script>
+        var currentImageIndex = 0;
+        var totalImages = 0;
+
         function loadImages() {
             var directoryInput = document.getElementById('directoryInput');
             var files = directoryInput.files;
@@ -109,10 +128,16 @@
             var gallery = document.getElementById('imageGallery');
             gallery.innerHTML = ''; // Clear existing images
 
-            for (var i = 0; i < files.length; i++) {
+            totalImages = files.length;
+
+            for (var i = 0; i < totalImages; i++) {
                 var file = files[i];
                 if (file.type.match('image.*')) {
                     var reader = new FileReader();
+
+                    reader.onloadstart = function() {
+                        document.getElementById('myModal').style.display = 'block';
+                    };
 
                     reader.onload = function(e) {
                         var img = document.createElement('img');
@@ -134,6 +159,17 @@
                         gallery.appendChild(galleryItem);
                     };
 
+                    reader.onloadend = function() {
+                        currentImageIndex++;
+                        var progressBar = document.getElementById('progressBar');
+                        progressBar.style.width = ((currentImageIndex / totalImages) * 100) + '%';
+
+                        if (currentImageIndex === totalImages) {
+                            document.getElementById('myModal').style.display = 'none';
+                            currentImageIndex = 0;
+                        }
+                    };
+
                     reader.readAsDataURL(file);
                 }
             }
@@ -146,6 +182,25 @@
             img.src = imageSrc;
             modal.style.display = 'block';
             document.documentElement.style.overflow = 'hidden'; // Hide scrollbars
+
+            // Add event listener for keyboard arrow keys
+            document.addEventListener('keydown', handleKeyDown);
+        }
+
+        // Function to handle keyboard arrow key events
+        function handleKeyDown(event) {
+            var modal = document.getElementById('myModal');
+            if (modal.style.display === 'block') {
+                if (event.keyCode === 37) { // Left arrow key
+                    currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages;
+                    var prevImage = document.querySelectorAll('.gallery-item img')[currentImageIndex];
+                    document.getElementById('fullScreenImage').src = prevImage.src;
+                } else if (event.keyCode === 39) { // Right arrow key
+                    currentImageIndex = (currentImageIndex + 1) % totalImages;
+                    var nextImage = document.querySelectorAll('.gallery-item img')[currentImageIndex];
+                    document.getElementById('fullScreenImage').src = nextImage.src;
+                }
+            }
         }
 
         // Function to close full-screen modal
@@ -153,6 +208,9 @@
             var modal = document.getElementById('myModal');
             modal.style.display = 'none';
             document.documentElement.style.overflow = 'auto'; // Show scrollbars
+
+            // Remove event listener for keyboard arrow keys
+            document.removeEventListener('keydown', handleKeyDown);
         }
     </script>
 </body>
