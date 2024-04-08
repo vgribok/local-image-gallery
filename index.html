@@ -95,7 +95,7 @@
                     reader.onload = function(e) {
                         var img = document.createElement('img');
                         img.src = e.target.result;
-                        img.onclick = function() { openModal(e.target.src); }; // Add onclick handler to open modal
+                        img.onclick = function() { openModal(img.src); }; // Pass img.src to openModal
                         gallery.appendChild(img);
                     };
 
