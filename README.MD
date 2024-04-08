@@ -1,0 +1,1 @@
+A simple client-side image gallery to allow HDR JPEGs (with gain maps) stored on the local file system to be displayed in the browser.
