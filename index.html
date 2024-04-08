@@ -98,6 +98,7 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
+            display: none; /* Hide arrow controls by default */
         }
 
         .navigation:hover {
@@ -110,6 +111,19 @@
 
         .next {
             right: 20px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: #ccc;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: #4caf50;
         }
     </style>
 </head>
@@ -163,6 +177,9 @@
                     reader.onloadstart = function() {
                         document.getElementById('myModal').style.display = 'block';
                         document.body.style.overflowY = 'hidden'; // Hide vertical scrollbar
+                        document.querySelectorAll('.navigation').forEach(function(el) {
+                            el.style.display = 'none'; // Hide arrow controls during file loading
+                        });
                     };
 
                     reader.onload = function(e) {
@@ -194,6 +211,10 @@
                             document.getElementById('myModal').style.display = 'none';
                             document.body.style.overflowY = 'auto'; // Restore vertical scrollbar
                             currentImageIndex = 0;
+                            progressBar.style.width = '0'; // Reset progress bar width
+                            document.querySelectorAll('.navigation').forEach(function(el) {
+                                el.style.display = 'block'; // Show arrow controls after file loading
+                            });
                         }
                     };
 
