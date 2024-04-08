@@ -6,7 +6,7 @@
     <title>Local Image Gallery</title>
     <style>
         .gallery {
-            display: grid;
+            display: none;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             grid-gap: 20px;
             margin: 20px;
@@ -52,7 +52,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(0, 0, 0, 0.8);
             overflow: auto;
         }
 
@@ -89,23 +89,50 @@
         }
 
         .progress-bar {
-            width: 0%;
+            width: 100%;
             height: 100%;
             background-color: #4caf50;
+        }
+
+        .navigation {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .navigation:hover {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+
+        .prev {
+            left: 20px;
+        }
+
+        .next {
+            right: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Local Image Gallery</h1>
 
-    <input type="file" id="directoryInput" webkitdirectory directory multiple accept="image/*">
-    <button onclick="loadImages()">Load Images</button>
-
+    <input type="file" id="directoryInput" webkitdirectory directory multiple accept="image/jpeg, image/png, image/gif">
     <div class="gallery" id="imageGallery"></div>
 
     <!-- Full-screen modal -->
     <div id="myModal" class="modal">
         <span class="close" onclick="closeModal()">&times;</span>
+        <div class="navigation prev" onclick="prevImage()">&#10094;</div>
+        <div class="navigation next" onclick="nextImage()">&#10095;</div>
         <img class="modal-content" id="fullScreenImage">
         <div class="progress-container">
             <div class="progress-bar" id="progressBar"></div>
@@ -128,11 +155,14 @@
             var gallery = document.getElementById('imageGallery');
             gallery.innerHTML = ''; // Clear existing images
 
-            totalImages = files.length;
+            totalImages = 0;
+            currentImageIndex = 0;
 
-            for (var i = 0; i < totalImages; i++) {
+            for (var i = 0; i < files.length; i++) {
                 var file = files[i];
-                if (file.type.match('image.*')) {
+                if (file.type.match('image/jpeg') || file.type.match('image/png') || file.type.match('image/gif')) {
+                    totalImages++;
+
                     var reader = new FileReader();
 
                     reader.onloadstart = function() {
@@ -173,6 +203,8 @@
                     reader.readAsDataURL(file);
                 }
             }
+
+            document.querySelector('.gallery').style.display = 'grid'; // Display the gallery after images are loaded
         }
 
         // Function to open full-screen modal with clicked image
@@ -181,7 +213,7 @@
             var img = document.getElementById('fullScreenImage');
             img.src = imageSrc;
             modal.style.display = 'block';
-            document.documentElement.style.overflow = 'hidden'; // Hide scrollbars
+            document.body.style.overflow = 'hidden'; // Hide body scrollbar
 
             // Add event listener for keyboard arrow keys
             document.addEventListener('keydown', handleKeyDown);
@@ -189,17 +221,28 @@
 
         // Function to handle keyboard arrow key events
         function handleKeyDown(event) {
-            var modal = document.getElementById('myModal');
-            if (modal.style.display === 'block') {
-                if (event.keyCode === 37) { // Left arrow key
-                    currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages;
-                    var prevImage = document.querySelectorAll('.gallery-item img')[currentImageIndex];
-                    document.getElementById('fullScreenImage').src = prevImage.src;
-                } else if (event.keyCode === 39) { // Right arrow key
-                    currentImageIndex = (currentImageIndex + 1) % totalImages;
-                    var nextImage = document.querySelectorAll('.gallery-item img')[currentImageIndex];
-                    document.getElementById('fullScreenImage').src = nextImage.src;
-                }
+            if (event.keyCode === 37) { // Left arrow key
+                prevImage();
+            } else if (event.keyCode === 39) { // Right arrow key
+                nextImage();
+            }
+        }
+
+        // Function to navigate to the previous image
+        function prevImage() {
+            if (currentImageIndex > 0) {
+                currentImageIndex--;
+                var prevImage = document.querySelectorAll('.gallery-item img')[currentImageIndex];
+                document.getElementById('fullScreenImage').src = prevImage.src;
+            }
+        }
+
+        // Function to navigate to the next image
+        function nextImage() {
+            if (currentImageIndex < totalImages - 1) {
+                currentImageIndex++;
+                var nextImage = document.querySelectorAll('.gallery-item img')[currentImageIndex];
+                document.getElementById('fullScreenImage').src = nextImage.src;
             }
         }
 
@@ -207,7 +250,7 @@
         function closeModal() {
             var modal = document.getElementById('myModal');
             modal.style.display = 'none';
-            document.documentElement.style.overflow = 'auto'; // Show scrollbars
+            document.body.style.overflow = 'auto'; // Show body scrollbar
 
             // Remove event listener for keyboard arrow keys
             document.removeEventListener('keydown', handleKeyDown);
