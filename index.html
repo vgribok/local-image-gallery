@@ -182,11 +182,12 @@
             progressModal.style.display = 'block'; // Display progress modal
 
             var numLoaded = 0;
-            var totalFiles = files.length;
+            var totalFiles = 0; // Total number of image files
 
-            for (var i = 0; i < totalFiles; i++) {
+            for (var i = 0; i < files.length; i++) {
                 var file = files[i];
                 if (file.type.match('image/jpeg') || file.type.match('image/png') || file.type.match('image/gif')) {
+                    totalFiles++; // Increment total image files count
                     var reader = new FileReader();
 
                     reader.onload = function(e) {
@@ -215,6 +216,7 @@
                         var progressPercentage = (numLoaded / totalFiles) * 100;
                         progressBar.style.width = progressPercentage + '%';
 
+                        // Check if all image files have been loaded
                         if (numLoaded === totalFiles) {
                             progressModal.style.display = 'none'; // Hide progress modal when all images are loaded
                             document.querySelector('.gallery').style.display = 'grid'; // Display the gallery after images are loaded
@@ -222,9 +224,21 @@
                     };
 
                     reader.readAsDataURL(file);
+                } else {
+                    // Increment numLoaded even for non-image files to keep track of progress
+                    numLoaded++;
+                    var progressPercentage = (numLoaded / files.length) * 100;
+                    progressBar.style.width = progressPercentage + '%';
+
+                    // Check if all files have been processed
+                    if (numLoaded === files.length) {
+                        progressModal.style.display = 'none'; // Hide progress modal when all files are processed
+                        document.querySelector('.gallery').style.display = 'grid'; // Display the gallery after processing
+                    }
                 }
             }
         }
+
 
         // Function to open full-screen modal with clicked image
         function openModal(index) {
