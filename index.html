@@ -58,6 +58,7 @@
             border-radius: 8px;
             text-align: center;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: 2px solid #000; /* Add contrast border */
         }
 
         .progress-container {
@@ -198,14 +199,12 @@
             var progressBar = document.getElementById('progressBar');
             var progressInfo = document.getElementById('progressInfo');
 
-            progressInfo.textContent = `Loading ${imageFiles.length} image(s)...`;
-
             progressModal.style.display = 'block'; // Display progress modal
 
             var numLoaded = 0;
             var totalFiles = imageFiles.length; // Total number of image files
 
-            imageFiles.forEach(function(file) {
+            imageFiles.forEach(function(file, index) {
                 var reader = new FileReader();
 
                 reader.onload = function(e) {
@@ -233,6 +232,9 @@
                     numLoaded++;
                     var progressPercentage = (numLoaded / totalFiles) * 100;
                     progressBar.style.width = progressPercentage + '%';
+
+                    // Update progress info text
+                    progressInfo.textContent = `Loading file ${index + 1} of ${totalFiles}...`;
 
                     // Check if all image files have been loaded
                     if (numLoaded === totalFiles) {
