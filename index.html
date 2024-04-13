@@ -245,11 +245,22 @@
                 });
             }
 
-            // Determine if back and forward buttons should be displayed
-            if (currentImageIndex === 0) {
+            // Determine current image index
+            var clickedImageIndex = Array.from(document.querySelectorAll('.gallery-item img')).findIndex(function(el) {
+                return el.src === imageSrc;
+            });
+
+            // Show/hide navigation buttons based on current image index
+            if (clickedImageIndex === 0) {
                 document.querySelector('.prev').style.display = 'none'; // Hide back navigation button if first image is displayed
-            } else if (currentImageIndex === totalImages - 1) {
+                document.querySelector('.next').style.display = 'block'; // Show forward navigation button
+            } else if (clickedImageIndex === totalImages - 1) {
+                document.querySelector('.prev').style.display = 'block'; // Show back navigation button
                 document.querySelector('.next').style.display = 'none'; // Hide forward navigation button if last image is displayed
+            } else {
+                document.querySelectorAll('.navigation').forEach(function(el) {
+                    el.style.display = 'block'; // Show both navigation buttons
+                });
             }
 
             // Add event listener for keyboard arrow keys and Esc key
