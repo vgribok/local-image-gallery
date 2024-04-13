@@ -53,22 +53,30 @@
             transform: translate(-50%, -50%);
             width: 50%;
             max-width: 400px; /* Max width of progress bar */
-            padding: 10px;
+            padding: 20px;
             background-color: rgba(255, 255, 255, 0.9); /* Updated background color */
             border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .progress-container {
             width: 100%;
-            height: 4px;
+            height: 10px;
             background-color: #eee; /* Updated background color */
-            margin-top: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+            overflow: hidden;
         }
 
         .progress-bar {
             width: 0;
             height: 100%;
-            background-color: #6ac259; /* Updated progress color */
+            background-color: #4CAF50; /* Updated progress color */
+        }
+
+        .progress-info {
+            margin-bottom: 20px;
         }
 
         /* Styles for full-screen image modal */
@@ -141,6 +149,7 @@
 
     <!-- Modal for progress bar -->
     <div id="progressModal">
+        <div class="progress-info" id="progressInfo"></div>
         <div class="progress-container">
             <div class="progress-bar" id="progressBar"></div>
         </div>
@@ -187,6 +196,10 @@
 
             var progressModal = document.getElementById('progressModal');
             var progressBar = document.getElementById('progressBar');
+            var progressInfo = document.getElementById('progressInfo');
+
+            progressInfo.textContent = `Loading ${imageFiles.length} image(s)...`;
+
             progressModal.style.display = 'block'; // Display progress modal
 
             var numLoaded = 0;
