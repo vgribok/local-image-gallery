@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Local Image Gallery</title>
     <style>
+        body {
+            font-family: Arial, sans-serif; /* Use a font with no serifs */
+        }
+
         .gallery {
             display: none;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -145,7 +149,9 @@
     </style>
 </head>
 <body>
-    <input type="file" id="directoryInput" webkitdirectory directory multiple accept="image/jpeg, image/png, image/gif">
+    <div style="text-align: center;">
+        <input type="file" id="directoryInput" webkitdirectory directory multiple accept="image/jpeg, image/png, image/gif">
+    </div>
     <div class="gallery" id="imageGallery"></div>
 
     <!-- Modal for progress bar -->
