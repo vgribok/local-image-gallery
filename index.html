@@ -177,7 +177,14 @@
             imageUrls = []; // Clear existing image URLs array
             currentImageIndex = 0;
 
-            for (var i = 0; i < files.length; i++) {
+            var progressModal = document.getElementById('progressModal');
+            var progressBar = document.getElementById('progressBar');
+            progressModal.style.display = 'block'; // Display progress modal
+
+            var numLoaded = 0;
+            var totalFiles = files.length;
+
+            for (var i = 0; i < totalFiles; i++) {
                 var file = files[i];
                 if (file.type.match('image/jpeg') || file.type.match('image/png') || file.type.match('image/gif')) {
                     var reader = new FileReader();
@@ -203,13 +210,20 @@
 
                         img.onclick = function() { openModal(imageUrls.indexOf(img.src)); }; // Pass image index to openModal
                         gallery.appendChild(galleryItem);
+
+                        numLoaded++;
+                        var progressPercentage = (numLoaded / totalFiles) * 100;
+                        progressBar.style.width = progressPercentage + '%';
+
+                        if (numLoaded === totalFiles) {
+                            progressModal.style.display = 'none'; // Hide progress modal when all images are loaded
+                            document.querySelector('.gallery').style.display = 'grid'; // Display the gallery after images are loaded
+                        }
                     };
 
                     reader.readAsDataURL(file);
                 }
             }
-
-            document.querySelector('.gallery').style.display = 'grid'; // Display the gallery after images are loaded
         }
 
         // Function to open full-screen modal with clicked image
