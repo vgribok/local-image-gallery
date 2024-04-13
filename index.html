@@ -171,6 +171,14 @@
                 return;
             }
 
+            // Filter supported image files
+            var imageFiles = Array.from(files).filter(file => file.type.match('image/jpeg') || file.type.match('image/png') || file.type.match('image/gif'));
+
+            if (imageFiles.length === 0) {
+                alert("No supported image files found in the selected directory.");
+                return;
+            }
+
             var gallery = document.getElementById('imageGallery');
             gallery.innerHTML = ''; // Clear existing images
 
@@ -182,63 +190,47 @@
             progressModal.style.display = 'block'; // Display progress modal
 
             var numLoaded = 0;
-            var totalFiles = 0; // Total number of image files
+            var totalFiles = imageFiles.length; // Total number of image files
 
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                if (file.type.match('image/jpeg') || file.type.match('image/png') || file.type.match('image/gif')) {
-                    totalFiles++; // Increment total image files count
-                    var reader = new FileReader();
+            imageFiles.forEach(function(file) {
+                var reader = new FileReader();
 
-                    reader.onload = function(e) {
-                        var imgUrl = e.target.result; // Get the image URL
-                        imageUrls.push(imgUrl);
+                reader.onload = function(e) {
+                    var imgUrl = e.target.result; // Get the image URL
+                    imageUrls.push(imgUrl);
 
-                        var img = document.createElement('img');
-                        img.src = imgUrl;
-                        img.alt = file.name; // Set alt attribute to file name
-                        img.title = file.name; // Set title attribute to file name
+                    var img = document.createElement('img');
+                    img.src = imgUrl;
+                    img.alt = file.name; // Set alt attribute to file name
+                    img.title = file.name; // Set title attribute to file name
 
-                        var galleryItem = document.createElement('div');
-                        galleryItem.classList.add('gallery-item');
+                    var galleryItem = document.createElement('div');
+                    galleryItem.classList.add('gallery-item');
 
-                        var imageTitle = document.createElement('div');
-                        imageTitle.classList.add('image-title');
-                        imageTitle.textContent = file.name; // Set image title to file name
+                    var imageTitle = document.createElement('div');
+                    imageTitle.classList.add('image-title');
+                    imageTitle.textContent = file.name; // Set image title to file name
 
-                        galleryItem.appendChild(img);
-                        galleryItem.appendChild(imageTitle);
+                    galleryItem.appendChild(img);
+                    galleryItem.appendChild(imageTitle);
 
-                        img.onclick = function() { openModal(imageUrls.indexOf(img.src)); }; // Pass image index to openModal
-                        gallery.appendChild(galleryItem);
+                    img.onclick = function() { openModal(imageUrls.indexOf(img.src)); }; // Pass image index to openModal
+                    gallery.appendChild(galleryItem);
 
-                        numLoaded++;
-                        var progressPercentage = (numLoaded / totalFiles) * 100;
-                        progressBar.style.width = progressPercentage + '%';
-
-                        // Check if all image files have been loaded
-                        if (numLoaded === totalFiles) {
-                            progressModal.style.display = 'none'; // Hide progress modal when all images are loaded
-                            document.querySelector('.gallery').style.display = 'grid'; // Display the gallery after images are loaded
-                        }
-                    };
-
-                    reader.readAsDataURL(file);
-                } else {
-                    // Increment numLoaded even for non-image files to keep track of progress
                     numLoaded++;
-                    var progressPercentage = (numLoaded / files.length) * 100;
+                    var progressPercentage = (numLoaded / totalFiles) * 100;
                     progressBar.style.width = progressPercentage + '%';
 
-                    // Check if all files have been processed
-                    if (numLoaded === files.length) {
-                        progressModal.style.display = 'none'; // Hide progress modal when all files are processed
-                        document.querySelector('.gallery').style.display = 'grid'; // Display the gallery after processing
+                    // Check if all image files have been loaded
+                    if (numLoaded === totalFiles) {
+                        progressModal.style.display = 'none'; // Hide progress modal when all images are loaded
+                        document.querySelector('.gallery').style.display = 'grid'; // Display the gallery after images are loaded
                     }
-                }
-            }
-        }
+                };
 
+                reader.readAsDataURL(file);
+            });
+        }
 
         // Function to open full-screen modal with clicked image
         function openModal(index) {
