@@ -85,6 +85,19 @@
             cursor: pointer;
         }
 
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: #ccc;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: #4caf50;
+        }
+
         .navigation {
             position: absolute;
             top: 50%;
@@ -98,7 +111,6 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            display: none; /* Hide arrow controls by default */
         }
 
         .navigation:hover {
@@ -112,36 +124,25 @@
         .next {
             right: 20px;
         }
-
-        .progress-container {
-            width: 100%;
-            height: 4px;
-            background-color: #ccc;
-            margin-top: 10px;
-        }
-
-        .progress-bar {
-            width: 0;
-            height: 100%;
-            background-color: #4caf50;
-        }
     </style>
 </head>
 <body>
-    <h1>Local Image Gallery</h1>
-
     <input type="file" id="directoryInput" webkitdirectory directory multiple accept="image/jpeg, image/png, image/gif">
     <div class="gallery" id="imageGallery"></div>
 
-    <!-- Full-screen modal -->
-    <div id="myModal" class="modal">
+    <!-- Modal for progress bar -->
+    <div id="progressModal" class="modal">
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- Modal for enlarged picture view -->
+    <div id="imageModal" class="modal">
         <span class="close" onclick="closeModal()">&times;</span>
         <div class="navigation prev" onclick="prevImage()">&#10094;</div>
         <div class="navigation next" onclick="nextImage()">&#10095;</div>
         <img class="modal-content" id="fullScreenImage">
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
     </div>
 
     <script>
@@ -175,11 +176,7 @@
                     var reader = new FileReader();
 
                     reader.onloadstart = function() {
-                        document.getElementById('myModal').style.display = 'block';
-                        document.body.style.overflowY = 'hidden'; // Hide vertical scrollbar
-                        document.querySelectorAll('.navigation').forEach(function(el) {
-                            el.style.display = 'none'; // Hide arrow controls during file loading
-                        });
+                        document.getElementById('progressModal').style.display = 'block';
                     };
 
                     reader.onload = function(e) {
@@ -208,13 +205,8 @@
                         progressBar.style.width = ((currentImageIndex / totalImages) * 100) + '%';
 
                         if (currentImageIndex === totalImages) {
-                            document.getElementById('myModal').style.display = 'none';
-                            document.body.style.overflowY = 'auto'; // Restore vertical scrollbar
+                            document.getElementById('progressModal').style.display = 'none';
                             currentImageIndex = 0;
-                            progressBar.style.width = '0'; // Reset progress bar width
-                            document.querySelectorAll('.navigation').forEach(function(el) {
-                                el.style.display = 'block'; // Show arrow controls after file loading
-                            });
                         }
                     };
 
@@ -227,7 +219,7 @@
 
         // Function to open full-screen modal with clicked image
         function openModal(imageSrc) {
-            var modal = document.getElementById('myModal');
+            var modal = document.getElementById('imageModal');
             var img = document.getElementById('fullScreenImage');
             img.src = imageSrc;
             modal.style.display = 'block';
@@ -266,9 +258,9 @@
             }
         }
 
-        // Function to close full-screen modal
+        // Function to close modal
         function closeModal() {
-            var modal = document.getElementById('myModal');
+            var modal = document.getElementById('imageModal');
             modal.style.display = 'none';
             document.body.style.overflow = 'auto'; // Show body scrollbar
 
