@@ -80,8 +80,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 1); /* Updated opacity */
-            overflow: hidden; /* Updated to hide scrollbars */
+            background-color: rgba(0, 0, 0, 0.9); /* Updated opacity */
+            overflow: auto; /* Updated to show scrollbars */
         }
 
         .modal-content {
@@ -89,10 +89,6 @@
             display: block;
             max-width: 100%;
             max-height: 100%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); /* Centering the image */
             background-color: rgba(255, 255, 255, 1); /* Fully opaque background */
         }
 
@@ -159,8 +155,8 @@
     </div>
 
     <script>
+        var imageUrls = []; // Store image URLs instead of File objects
         var currentImageIndex = 0;
-        var totalImages = 0;
 
         document.getElementById('directoryInput').addEventListener('change', function() {
             loadImages();
@@ -178,23 +174,20 @@
             var gallery = document.getElementById('imageGallery');
             gallery.innerHTML = ''; // Clear existing images
 
-            totalImages = 0;
+            imageUrls = []; // Clear existing image URLs array
             currentImageIndex = 0;
 
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
                 if (file.type.match('image/jpeg') || file.type.match('image/png') || file.type.match('image/gif')) {
-                    totalImages++;
-
                     var reader = new FileReader();
 
-                    reader.onloadstart = function() {
-                        document.getElementById('progressModal').style.display = 'block';
-                    };
-
                     reader.onload = function(e) {
+                        var imgUrl = e.target.result; // Get the image URL
+                        imageUrls.push(imgUrl);
+
                         var img = document.createElement('img');
-                        img.src = e.target.result;
+                        img.src = imgUrl;
                         img.alt = file.name; // Set alt attribute to file name
                         img.title = file.name; // Set title attribute to file name
 
@@ -208,19 +201,8 @@
                         galleryItem.appendChild(img);
                         galleryItem.appendChild(imageTitle);
 
-                        img.onclick = function() { openModal(img.src); }; // Pass img.src to openModal
+                        img.onclick = function() { openModal(imageUrls.indexOf(img.src)); }; // Pass image index to openModal
                         gallery.appendChild(galleryItem);
-                    };
-
-                    reader.onloadend = function() {
-                        currentImageIndex++;
-                        var progressBar = document.getElementById('progressBar');
-                        progressBar.style.width = ((currentImageIndex / totalImages) * 100) + '%';
-
-                        if (currentImageIndex === totalImages) {
-                            document.getElementById('progressModal').style.display = 'none';
-                            currentImageIndex = 0;
-                        }
                     };
 
                     reader.readAsDataURL(file);
@@ -231,37 +213,32 @@
         }
 
         // Function to open full-screen modal with clicked image
-        function openModal(imageSrc) {
+        function openModal(index) {
             var modal = document.getElementById('imageModal');
             var img = document.getElementById('fullScreenImage');
-            img.src = imageSrc;
+            img.src = imageUrls[index]; // Get the URL from the imageUrls array
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden'; // Hide body scrollbar
 
             // Show navigation buttons if there are multiple images
-            if (totalImages > 1) {
+            if (imageUrls.length > 1) {
                 document.querySelectorAll('.navigation').forEach(function(el) {
                     el.style.display = 'block';
                 });
             }
 
-            // Determine current image index
-            var clickedImageIndex = Array.from(document.querySelectorAll('.gallery-item img')).findIndex(function(el) {
-                return el.src === imageSrc;
-            });
-
             // Show/hide navigation buttons based on current image index
-            if (clickedImageIndex === 0) {
+            if (index === 0) {
                 document.querySelector('.prev').style.display = 'none'; // Hide back navigation button if first image is displayed
-                document.querySelector('.next').style.display = 'block'; // Show forward navigation button
-            } else if (clickedImageIndex === totalImages - 1) {
-                document.querySelector('.prev').style.display = 'block'; // Show back navigation button
+            } else if (index === imageUrls.length - 1) {
                 document.querySelector('.next').style.display = 'none'; // Hide forward navigation button if last image is displayed
             } else {
                 document.querySelectorAll('.navigation').forEach(function(el) {
                     el.style.display = 'block'; // Show both navigation buttons
                 });
             }
+
+            currentImageIndex = index;
 
             // Add event listener for keyboard arrow keys and Esc key
             document.addEventListener('keydown', handleKeyDown);
@@ -282,25 +259,15 @@
         function prevImage() {
             if (currentImageIndex > 0) {
                 currentImageIndex--;
-                var prevImage = document.querySelectorAll('.gallery-item img')[currentImageIndex];
-                document.getElementById('fullScreenImage').src = prevImage.src;
-                document.querySelector('.next').style.display = 'block'; // Show forward navigation button
-            }
-            if (currentImageIndex === 0) {
-                document.querySelector('.prev').style.display = 'none'; // Hide back navigation button if first image is displayed
+                openModal(currentImageIndex);
             }
         }
 
         // Function to navigate to the next image
         function nextImage() {
-            if (currentImageIndex < totalImages - 1) {
+            if (currentImageIndex < imageUrls.length - 1) {
                 currentImageIndex++;
-                var nextImage = document.querySelectorAll('.gallery-item img')[currentImageIndex];
-                document.getElementById('fullScreenImage').src = nextImage.src;
-                document.querySelector('.prev').style.display = 'block'; // Show back navigation button
-            }
-            if (currentImageIndex === totalImages - 1) {
-                document.querySelector('.next').style.display = 'none'; // Hide forward navigation button if last image is displayed
+                openModal(currentImageIndex);
             }
         }
 
