@@ -7,6 +7,8 @@
     <style>
         body {
             font-family: Arial, sans-serif; /* Use a font with no serifs */
+            margin: 0;
+            padding: 0;
         }
 
         .gallery {
@@ -88,7 +90,7 @@
         #imageModal {
             display: none;
             position: fixed;
-            z-index: 9999;
+            z-index: 10000; /* Ensure modal is on top of other elements */
             top: 0;
             left: 0;
             width: 100%;
@@ -103,9 +105,10 @@
             max-width: 100%;
             max-height: calc(100% - 20px); /* Adjusted to leave some space at the bottom */
             background-color: rgba(255, 255, 255, 1); /* Fully opaque background */
-            position: relative; /* Added position relative */
-            top: 50%; /* Added top 50% */
-            transform: translateY(-50%); /* Added translate -50% */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         .close {
@@ -117,6 +120,7 @@
             font-weight: bold;
             transition: 0.3s;
             cursor: pointer;
+            z-index: 10001; /* Ensure close button is on top of modal content */
         }
 
         .close:hover,
@@ -136,6 +140,7 @@
             border-radius: 50%;
             cursor: pointer;
             display: none; /* Initially hide navigation buttons */
+            z-index: 10001; /* Ensure navigation buttons are on top of modal content */
         }
 
         .navigation:hover {
