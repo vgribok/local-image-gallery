@@ -212,6 +212,10 @@
                 return;
             }
 
+            // Clear progress info text and progress bar width
+            document.getElementById('progressInfo').textContent = '';
+            document.getElementById('progressBar').style.width = '0%';
+
             // Filter supported image files
             var imageFiles = Array.from(files).filter(file => file.type.match('image/jpeg') || file.type.match('image/png') || file.type.match('image/gif'));
 
